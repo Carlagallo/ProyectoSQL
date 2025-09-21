@@ -62,7 +62,6 @@ A partir de las consultas se obtuvieron, entre otros resultados:
 - La base de datos incluye múltiples relaciones N-a-N (por ejemplo `film_actor`, `film_category`), lo que permite ejercicios complejos de joins.
 - Para análisis más profundos (por ejemplo, ingresos por categoría y mes) pueden combinarse varias de las vistas creadas.
 
-
-```bash
-\i Consultas.sql
+AUTOR: Carla Gallo Cavalletti
+Septiembre 2025
 
