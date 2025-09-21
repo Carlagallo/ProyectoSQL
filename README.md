@@ -1,96 +1,68 @@
-# ProyectoSQL
+# Proyecto SQL – Análisis de la Base de Datos DVD Rental
 
--- # ProyectoSQL
--- Primeras consultas realizadas
+Este proyecto recoge una serie de **consultas SQL en PostgreSQL** realizadas sobre la base de datos de ejemplo **DVD Rental**.  
+El objetivo fue practicar operaciones de selección, agregación, subconsultas, joins, creación de vistas y tablas temporales, así como análisis exploratorio de los datos.
 
--- ========================================
--- 🔍 DataProject: Lógica de Consultas SQL
--- ========================================
+## 🔧 Requisitos previos
 
--- 1️⃣ Mostrar los nombres de todas las películas con clasificación por edades 'R'
-SELECT "title" AS "Título"
-FROM "film"
-WHERE "rating" = 'R';
+- **PostgreSQL 13+** (compatible con otras versiones recientes)
+- Cliente SQL (por ejemplo **DBeaver**, pgAdmin o psql)
+- Base de datos de ejemplo "Tienda de peliculas"
 
+## 📂 Estructura del repositorio
 
--- 2️⃣ Encontrar los nombres de los actores con “actor_id” entre 30 y 40
-SELECT 
-  "actor_id" AS "ID", 
-  "first_name" AS "Nombre", 
-  "last_name" AS "Apellido"
-FROM "actor"
-WHERE "actor_id" BETWEEN 30 AND 40;
+├── Consultas.sql # Archivo con todas las sentencias SQL
+└── README.md # Este archivo
 
 
--- 3️⃣ Obtener las películas cuyo idioma coincide con el idioma original
-SELECT 
-  "title" AS "Título",
-  "language_id" AS "Idioma",
-  "original_language_id" AS "Idioma Original"
-FROM "film"
-WHERE "language_id" = "original_language_id";
+## 🚀 Pasos seguidos
+
+1. **Carga de la base de datos**  
+   - Restauración del backup `BBDD_Proyecto.sql` en PostgreSQL.
+
+2. **Diseño de las consultas**  
+   - Se elaboraron **64 ejercicios** que cubren:
+     - Filtrado con `WHERE`, `BETWEEN`, `IN`, `NOT IN`, `LIKE`
+     - Funciones de agregación (`COUNT`, `AVG`, `SUM`, `VARIANCE`, etc.)
+     - Agrupaciones y filtros con `GROUP BY` y `HAVING`
+     - Distintos tipos de joins: `INNER`, `LEFT`, `RIGHT`, `CROSS`
+     - Subconsultas y expresiones escalares
+     - Creación de **vistas** (`CREATE VIEW`) y **tablas temporales** (`CREATE TEMP TABLE`)
+
+3. **Pruebas en DBeaver**  
+   - Se ejecutaron y verificaron todas las consultas asegurando compatibilidad con PostgreSQL.
+
+## 🗂 Informe de Análisis
+
+A partir de las consultas se obtuvieron, entre otros resultados:
+
+- **Películas**  
+  - Identificación de las más largas (>180 min) y su varianza de costo de reemplazo.
+  - Media de duración por clasificación (`rating`).
+
+- **Actores y participación**  
+  - Listado de actores con mayor número de películas.
+  - Actores que no han actuado en ninguna película.
+
+- **Clientes y rentas**  
+  - Top 5 de clientes por gasto total.
+  - Clientes que han alquilado al menos 7 películas distintas.
+
+- **Categorías y rentas**  
+  - Cantidad total de alquileres por categoría.
+  - Promedio de duración de películas por categoría.
+
+- **Vistas y tablas temporales**  
+  - `vista_actor_num_peliculas`: actores y número de películas en que han participado.
+  - `cliente_rentas_temporal`: total de alquileres por cliente.
+  - `peliculas_alquiladas`: películas alquiladas al menos 10 veces.
+
+## 💡 Observaciones
+
+- La base de datos incluye múltiples relaciones N-a-N (por ejemplo `film_actor`, `film_category`), lo que permite ejercicios complejos de joins.
+- Para análisis más profundos (por ejemplo, ingresos por categoría y mes) pueden combinarse varias de las vistas creadas.
 
 
--- 4️⃣ Ordenar las películas por duración (de menor a mayor)
-SELECT 
-  "title" AS "Nombre de la película",
-  "length" AS "Duración"
-FROM "film"
-ORDER BY "length";
+```bash
+\i Consultas.sql
 
-
--- 5️⃣ Encontrar el nombre y apellido de los actores cuyo apellido es ‘Allen’
-SELECT 
-  "first_name" AS "Nombre",
-  "last_name" AS "Apellido"
-FROM "actor"
-WHERE "last_name" = 'Allen';
-
-
--- 6️⃣ Contar la cantidad total de películas por clasificación
-SELECT 
-  "rating" AS "Clasificación",
-  COUNT(*) AS "Cantidad de Películas"
-FROM "film"
-GROUP BY "rating";
-
-
--- 7️⃣ Obtener el título de las películas que sean ‘PG-13’ o duren más de 3 horas
-SELECT 
-  "title" AS "Película",
-  "rating" AS "Clasificación",
-  "length" AS "Duración"
-FROM "film"
-WHERE "rating" = 'PG-13' OR "length" > 180;
-
-
--- 8️⃣ Calcular la variabilidad del costo de reemplazo de las películas
-SELECT 
-  VAR_SAMP("replacement_cost") AS "Varianza del costo de reemplazo"
-FROM "film";
-
-
--- 9️⃣ Encontrar la mayor y menor duración de una película
-SELECT 	
-  MIN("length") AS "Duración mínima",
-  MAX("length") AS "Duración máxima"
-FROM "film";
-
-
--- 🔟 Obtener el monto del antepenúltimo alquiler (ordenado por fecha)
-SELECT 
-  "r"."rental_date" AS "Fecha de alquiler",
-  "p"."amount" AS "Monto pagado"
-FROM "rental" AS "r"
-JOIN "payment" AS "p" ON "r"."rental_id" = "p"."rental_id"
-ORDER BY "r"."rental_date" DESC 
-OFFSET 2
-LIMIT 1;
-
-
--- 🔁 Listar los títulos de películas que NO sean ni ‘NC-17’ ni ‘G’
-SELECT 
-  "title" AS "Título",
-  "rating" AS "Clasificación"
-FROM "film"
-WHERE "rating" NOT IN ('NC-17', 'G');
