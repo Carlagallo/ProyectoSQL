@@ -31,8 +31,8 @@ WHERE language_id = original_language_id;
 SELECT 
 	title AS "Nombre de la película", 
 	length AS "Duración" 
-FROM "film" 
-ORDER BY "length";
+FROM film
+ORDER BY length;
 
 -- 6 Encontrar el nombre y apellido de los actores cuyo apellido es ‘Allen’ 
 
@@ -131,7 +131,7 @@ WHERE LOWER(f.title) = LOWER('Egg Igby');
 -- 18. Selecciona todos los nombres de las películas únicos.
 
 select distinct title as "Título"
-from "film";ayor a 180 minutos en la tabla “film”
+from film; 
 
 
 -- 20. Encuentra las categorías de películas que tienen un promedio de duración superior a 110 minutos y muestra el nombre de la categoría junto con el promedio de duración
@@ -234,9 +234,6 @@ select
 from "film" as F
 inner join "inventory" as I
 	on I."film_id" = F."film_id"
-left join "rental" as R
-	on R."inventory_id" = I."inventory_id"
-	and R.return_date is null 
 group by F.title, F.film_id
 order by "Disponibles";
 
@@ -423,14 +420,12 @@ cross join category as Cat
 select 
 	A.first_name as "Nombre",
 	A.last_name as "Apellido",
-	CAT."name" as "Categoría"
+	CAT.name as "Categoría"
 from actor as A
 inner join film_actor as FA
 	on FA.actor_id = A.actor_id
-inner join film as F
-	on FA.film_id = FA.film_id 
 inner join film_category as FCAT
-	on FA.film_id = FCAT.film_id
+	on FA.film_id = FCAT.film_id 
 inner join category as CAT
 	on CAT.category_id = FCAT.category_id
 where LOWER(CAT.name) = LOWER('Action');
@@ -588,17 +583,17 @@ ORDER BY a.last_name, a.first_name;
 -- 56. Encuentra el nombre y apellido de los actores que no han actuado en ninguna película de la categoría ‘Music’
 
 SELECT 
-	a.first_name, 
-	a.last_name
+	A.first_name, 
+	A.last_name
 FROM actor as A
-WHERE a.actor_id NOT IN(
-    SELECT fa.actor_id
-    FROM film_actor fa
+WHERE A.actor_id NOT IN(
+    SELECT FA.actor_id
+    FROM film_actor as FA
     inner join film_category as FC
-    	ON fa.film_id = fc.film_id
+    	ON FA.film_id = FC.film_id
     inner join category as C
-    	ON fc.category_id = c.category_id
-    WHERE c.name = 'Music'
+    	ON FC.category_id  = C.category_id
+    WHERE C.name = 'Music'
 );
 
 
@@ -644,16 +639,17 @@ where length = (
 -- 60. Encuentra los nombres de los clientes que han alquilado al menos 7 películas distintas. Ordena los resultados alfabéticamente por apellido.
 
 SELECT
-	cst.first_name,
-	cst.last_name
-FROM rental AS rnt
-INNER JOIN inventory AS inv
-	ON rnt.inventory_id = inv.inventory_id
-INNER JOIN customer AS cst
-	ON rnt.customer_id = cst.customer_id
-GROUP BY cst.customer_id
-HAVING COUNT(DISTINCT film_id) >= 7
-ORDER BY cst.last_name ASC;
+	CST.first_name AS "Nombre",
+	CST.last_name AS "Apellido"
+FROM rental AS R
+INNER JOIN inventory AS INV
+	ON R.inventory_id = INV.inventory_id
+INNER JOIN customer AS CST
+	ON R.customer_id = CST.customer_id
+GROUP BY CST.customer_id, CST.first_name, CST.last_name
+HAVING COUNT(DISTINCT INV.film_id) >= 7
+ORDER BY CST.last_name ASC;
+
 
 
 -- 61. Encuentra la cantidad total de películas alquiladas por categoría y 
